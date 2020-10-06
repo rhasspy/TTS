@@ -10,11 +10,13 @@ from .text import text_to_sequence, phoneme_to_sequence
 def text_to_seqvec(text, CONFIG):
     text_cleaner = [CONFIG.text_cleaner]
     # text ot phonemes to sequence vector
+    characters = CONFIG.get('characters')
     if CONFIG.use_phonemes:
         seq = np.asarray(
             phoneme_to_sequence(text, text_cleaner, CONFIG.phoneme_language,
                                 CONFIG.enable_eos_bos_chars,
-                                tp=CONFIG.characters if 'characters' in CONFIG.keys() else None),
+                                tp=CONFIG.characters if 'characters' in CONFIG.keys() else None,
+                                backend=CONFIG.get('phoneme_backend', 'phonemizer')),
             dtype=np.int32)
     else:
         seq = np.asarray(text_to_sequence(text, text_cleaner, tp=CONFIG.characters if 'characters' in CONFIG.keys() else None), dtype=np.int32)

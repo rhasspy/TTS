@@ -23,9 +23,9 @@ _CURLY_RE = re.compile(r'(.*?)\{(.+?)\}(.*)')
 PHONEME_PUNCTUATION_PATTERN = r'['+_phoneme_punctuations+']+'
 
 
-def text2phone(text, language):
+def text2phone_phonemizer(text, language):
     '''
-    Convert graphemes to phonemes.
+    Convert graphemes to phonemes using phonemizer.
     '''
     seperator = phonemizer.separator.Separator(' |', '', '|')
     #try:
@@ -57,6 +57,47 @@ def text2phone(text, language):
 
     return ph
 
+_GRUUT_LANGUAGES = {}
+
+def text2phone_gruut(text, language):
+    '''
+    Convert graphemes to phonemes using gruut.
+    '''
+    import gruut
+
+    gruut_lang = _GRUUT_LANGUAGES.get(language)
+    if not gruut_lang:
+        gruut_lang = gruut.Language.load(language)
+        assert gruut_lang, f"Unsupported gruut language: {language}"
+        _GRUUT_LANGUAGES[language] = gruut_lang
+
+    text_phonemes = []
+    for sentence in gruut_lang.tokenizer.tokenize(text):
+        # Choose first pronunciation for each word
+        word_phonemes = [
+            wp[0]
+            for wp in gruut_lang.phonemizer.phonemize(
+                sentence.clean_words, word_indexes=True, word_breaks=True
+            )
+            if wp
+        ]
+
+        text_phonemes.extend(
+            p for ps in word_phonemes
+            for p in ps
+        )
+
+    return text_phonemes
+
+def text2phone(text, language, backend="phonemizer"):
+    '''
+    Convert graphemes to phonemes.
+    '''
+    if backend == "gruut":
+        # Use gruut instead of phonemizer
+        return text2phone_gruut(text, language)
+
+    return text2phone_phonemizer(text, language)
 
 def pad_with_eos_bos(phoneme_sequence, tp=None):
     # pylint: disable=global-statement
@@ -70,7 +111,7 @@ def pad_with_eos_bos(phoneme_sequence, tp=None):
     return [_phonemes_to_id[_bos]] + list(phoneme_sequence) + [_phonemes_to_id[_eos]]
 
 
-def phoneme_to_sequence(text, cleaner_names, language, enable_eos_bos=False, tp=None):
+def phoneme_to_sequence(text, cleaner_names, language, enable_eos_bos=False, tp=None, backend="phonemizer"):
     # pylint: disable=global-statement
     global _phonemes_to_id
     if tp:
@@ -79,12 +120,18 @@ def phoneme_to_sequence(text, cleaner_names, language, enable_eos_bos=False, tp=
 
     sequence = []
     clean_text = _clean_text(text, cleaner_names)
-    to_phonemes = text2phone(clean_text, language)
-    if to_phonemes is None:
-        print("!! After phoneme conversion the result is None. -- {} ".format(clean_text))
-    # iterate by skipping empty strings - NOTE: might be useful to keep it to have a better intonation.
-    for phoneme in filter(None, to_phonemes.split('|')):
-        sequence += _phoneme_to_sequence(phoneme)
+    to_phonemes = text2phone(clean_text, language, backend=backend)
+    if not to_phonemes:
+        print("!! After phoneme conversion the result is empty. -- {} ".format(clean_text))
+
+    if backend =="gruut":
+        # Convert list from gruut directly
+        sequence = _phoneme_to_sequence(to_phonemes)
+    else:
+        # iterate by skipping empty strings - NOTE: might be useful to keep it to have a better intonation.
+        for phoneme in filter(None, to_phonemes.split('|')):
+            sequence += _phoneme_to_sequence(phoneme)
+
     # Append EOS char
     if enable_eos_bos:
         sequence = pad_with_eos_bos(sequence, tp=tp)

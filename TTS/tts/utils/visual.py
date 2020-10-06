@@ -83,7 +83,8 @@ def visualize(alignment,
             text, [CONFIG.text_cleaner],
             CONFIG.phoneme_language,
             CONFIG.enable_eos_bos_chars,
-            tp=CONFIG.characters if 'characters' in CONFIG.keys() else None)
+            tp=CONFIG.characters if 'characters' in CONFIG.keys() else None,
+            backend=CONFIG.get('phoneme_backend', 'phonemizer'))
         text = sequence_to_phoneme(
             seq,
             tp=CONFIG.characters if 'characters' in CONFIG.keys() else None)

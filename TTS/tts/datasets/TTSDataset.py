@@ -23,6 +23,7 @@ class MyDataset(Dataset):
                  use_phonemes=True,
                  phoneme_cache_path=None,
                  phoneme_language="en-us",
+                 phoneme_backend="phonemizer",
                  enable_eos_bos=False,
                  speaker_mapping=None,
                  verbose=False):
@@ -42,6 +43,8 @@ class MyDataset(Dataset):
             phoneme_cache_path (str): path to cache phoneme features.
             phoneme_language (str): one the languages from
                 https://github.com/bootphon/phonemizer#languages
+            phoneme_backend (str): "phonemizer" or "gruut"
+                https://github.com/rhasspy/gruut
             enable_eos_bos (bool): enable end of sentence and beginning of sentences characters.
             verbose (bool): print diagnostic information.
         """
@@ -58,6 +61,7 @@ class MyDataset(Dataset):
         self.use_phonemes = use_phonemes
         self.phoneme_cache_path = phoneme_cache_path
         self.phoneme_language = phoneme_language
+        self.phoneme_backend = phoneme_backend
         self.enable_eos_bos = enable_eos_bos
         self.speaker_mapping = speaker_mapping
         self.verbose = verbose
@@ -88,7 +92,8 @@ class MyDataset(Dataset):
         phonemes = phoneme_to_sequence(text, [self.cleaners],
                                        language=self.phoneme_language,
                                        enable_eos_bos=False,
-                                       tp=self.tp)
+                                       tp=self.tp,
+                                       backend=self.phoneme_backend)
         phonemes = np.asarray(phonemes, dtype=np.int32)
         np.save(cache_path, phonemes)
         return phonemes
