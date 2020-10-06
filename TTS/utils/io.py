@@ -1,5 +1,5 @@
 import re
-import json
+import json5
 import pickle as pickle_tts
 
 
@@ -24,12 +24,10 @@ def load_config(config_path):
         config_path (str): path to config file.
     """
     config = AttrDict()
-    with open(config_path, "r") as f:
-        input_str = f.read()
-    # handle comments
-    input_str = re.sub(r'\\\n', '', input_str)
-    input_str = re.sub(r'//.*\n', '\n', input_str)
-    data = json.loads(input_str)
+
+    with open(config_path, "r") as config_file:
+        data = json5.load(config_file)
+
     config.update(data)
     return config
 
