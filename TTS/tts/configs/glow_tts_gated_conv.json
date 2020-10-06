@@ -26,8 +26,8 @@
 
         // MelSpectrogram parameters
         "num_mels": 80,         // size of the mel spec frame.
-        "mel_fmin": 50.0,        // minimum freq level for mel-spec. ~50 for male and ~95 for female voices. Tune for dataset!!
-        "mel_fmax": 7600.0,     // maximum freq level for mel-spec. Tune for dataset!!
+        "mel_fmin": 0.0,        // minimum freq level for mel-spec. ~50 for male and ~95 for female voices. Tune for dataset!!
+        "mel_fmax": 8000.0,     // maximum freq level for mel-spec. Tune for dataset!!
         "spec_gain": 1.0,         // scaler value appplied after log transform of spectrogram.
 
         // Normalization parameters
