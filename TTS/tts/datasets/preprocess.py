@@ -319,3 +319,15 @@ def _voxcel_x(root_path, meta_file, voxcel_idx):
 
     with open(str(cache_to), 'r') as f:
         return [x.strip().split('|') for x in f.readlines()]
+
+def ipa_tts(root_path, meta_file):
+    txt_file = os.path.join(root_path, meta_file)
+    speaker_name = "ipa_tts"
+    items = []
+    with open(txt_file, 'r', encoding="utf-8") as f:
+        for line in f:
+            cols = line.split("|")
+            text = cols[1]
+            wav_file = os.path.join(root_path, cols[0] + ".wav")
+            items.append([text, wav_file, speaker_name])
+    return items
