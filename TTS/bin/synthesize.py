@@ -145,7 +145,7 @@ if __name__ == "__main__":
     print(" > Text: {}".format(args.text))
 
     if not C.use_external_speaker_embedding_file:
-        if args.speaker_fileid.isdigit():
+        if args.speaker_fileid and args.speaker_fileid.isdigit():
             args.speaker_fileid = int(args.speaker_fileid)
         else:
             args.speaker_fileid = None
