@@ -72,6 +72,7 @@ class MyDataset(Dataset):
             print(" | > Use phonemes: {}".format(self.use_phonemes))
             if use_phonemes:
                 print("   | > phoneme language: {}".format(phoneme_language))
+                print("   | > phoneme backend: {}".format(phoneme_backend))
             print(" | > Number of instances : {}".format(len(self.items)))
         self.sort_items()
 
