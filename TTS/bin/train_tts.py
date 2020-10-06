@@ -484,10 +484,7 @@ def main(args):  # pylint: disable=redefined-outer-name
     # Audio processor
     ap = AudioProcessor(**c.audio)
     if 'characters' in c.keys():
-        symbols, phonemes = make_symbols(
-            **c.characters,
-            c["characters"].get("eos_bos_phonemes", True)
-        )
+        symbols, phonemes = make_symbols(**c.characters)
 
     # DISTRUBUTED
     if num_gpus > 1:
