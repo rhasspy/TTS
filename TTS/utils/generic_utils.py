@@ -11,6 +11,8 @@ def get_git_branch():
         current = next(line for line in out.split("\n")
                        if line.startswith("*"))
         current.replace("* ", "")
+    except StopIteration:
+        current = "no branch"
     except subprocess.CalledProcessError:
         current = "inside_docker"
     return current
