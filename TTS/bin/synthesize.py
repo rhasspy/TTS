@@ -20,15 +20,34 @@ from TTS.vocoder.utils.generic_utils import setup_generator
 
 def tts(model, vocoder_model, text, CONFIG, use_cuda, ap, use_gl, speaker_fileid, speaker_embedding=None, gst_style=None):
     t_1 = time.time()
-    waveform, _, _, mel_postnet_spec, _, _ = synthesis(model, text, CONFIG, use_cuda, ap, speaker_fileid, gst_style, False, CONFIG.enable_eos_bos_chars, use_gl, speaker_embedding=speaker_embedding)
+    waveform, _, _, mel_postnet_spec, _, _ = synthesis(
+        model=model,
+        text=text,
+        CONFIG=CONFIG,
+        use_cuda=use_cuda,
+        ap=ap,
+        speaker_id=speaker_fileid,
+        style_wav=gst_style,
+        trunacted=False,
+        enable_eos_bos_chars=CONFIG.enable_eos_bos_chars,
+        use_griffin_lm=use_gl,
+        speaker_embedding=speaker_embedding,
+        backend="torch",
+        do_trim_silence=False
+    )
+
     if CONFIG.model == "Tacotron" and not use_gl:
         mel_postnet_spec = ap.out_linear_to_mel(mel_postnet_spec.T).T
+
     if not use_gl:
         waveform = vocoder_model.inference(torch.FloatTensor(mel_postnet_spec.T).unsqueeze(0))
+
     if use_cuda and not use_gl:
         waveform = waveform.cpu()
+
     if not use_gl:
         waveform = waveform.numpy()
+
     waveform = waveform.squeeze()
     rtf = (time.time() - t_1) / (len(waveform) / ap.sample_rate)
     tps = (time.time() - t_1) / len(waveform)
@@ -125,7 +144,9 @@ if __name__ == "__main__":
     model.eval()
     if args.use_cuda:
         model.cuda()
-    model.decoder.set_r(cp['r'])
+
+    if hasattr(model.decoder, "set_r"):
+        model.decoder.set_r(cp['r'])
 
     # load vocoder model
     if args.vocoder_path != "":
@@ -152,8 +173,8 @@ if __name__ == "__main__":
     else:
         args.speaker_fileid = None
 
-    if args.gst_style is None:
-        gst_style = C.gst['gst_style_input']
+    if (args.gst_style is None) and ("gst" in C.keys()):
+        gst_style = C.gst.get('gst_style_input', None)
     else:
         # check if gst_style string is a dict, if is dict convert  else use string
         try:
