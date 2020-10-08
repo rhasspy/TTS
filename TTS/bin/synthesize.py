@@ -28,9 +28,9 @@ def tts(model, vocoder_model, text, CONFIG, use_cuda, ap, use_gl, speaker_fileid
         ap=ap,
         speaker_id=speaker_fileid,
         style_wav=gst_style,
-        trunacted=False,
+        truncated=False,
         enable_eos_bos_chars=CONFIG.enable_eos_bos_chars,
-        use_griffin_lm=use_gl,
+        use_griffin_lim=use_gl,
         speaker_embedding=speaker_embedding,
         backend="torch",
         do_trim_silence=False
