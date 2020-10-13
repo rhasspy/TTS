@@ -4,24 +4,22 @@ if 'tensorflow' in installed or 'tensorflow-gpu' in installed:
     import tensorflow as tf
 import torch
 import numpy as np
-from .text import text_to_sequence, phoneme_to_sequence
+from .text import text_to_sequence, phoneme_to_sequence, _phoneme_to_sequence
 
-
-def text_to_seqvec(text, CONFIG):
+def text_to_seqvec(text, CONFIG, text_is_phonemes=False):
     text_cleaner = [CONFIG.text_cleaner]
     # text ot phonemes to sequence vector
-    characters = CONFIG.get('characters')
     if CONFIG.use_phonemes:
         seq = np.asarray(
             phoneme_to_sequence(text, text_cleaner, CONFIG.phoneme_language,
                                 CONFIG.enable_eos_bos_chars,
                                 tp=CONFIG.characters if 'characters' in CONFIG.keys() else None,
-                                backend=CONFIG.get('phoneme_backend', 'phonemizer')),
+                                backend=CONFIG.get('phoneme_backend', 'phonemizer'),
+                                text_is_phonemes=text_is_phonemes),
             dtype=np.int32)
     else:
         seq = np.asarray(text_to_sequence(text, text_cleaner, tp=CONFIG.characters if 'characters' in CONFIG.keys() else None), dtype=np.int32)
     return seq
-
 
 def numpy_to_torch(np_array, dtype, cuda=False):
     if np_array is None:
@@ -189,7 +187,8 @@ def synthesis(model,
               use_griffin_lim=False,
               do_trim_silence=False,
               speaker_embedding=None,
-              backend='torch'):
+              backend='torch',
+              text_is_phonemes=False):
     """Synthesize voice for the given text.
 
         Args:
@@ -206,6 +205,7 @@ def synthesis(model,
             enable_eos_bos_chars (bool): enable special chars for end of sentence and start of sentence.
             do_trim_silence (bool): trim silence after synthesis.
             backend (str): tf or torch
+            text_is_phonemes (bool): If True, text is treated as a list of phoneme strings
     """
     # GST processing
     style_mel = None
@@ -214,8 +214,10 @@ def synthesis(model,
             style_mel = style_wav
         else:
             style_mel = compute_style_mel(style_wav, ap, cuda=use_cuda)
+
     # preprocess the given text
-    inputs = text_to_seqvec(text, CONFIG)
+    inputs = text_to_seqvec(text, CONFIG, text_is_phonemes=text_is_phonemes)
+
     # pass tensors to backend
     if backend == 'torch':
         if speaker_id is not None:
