@@ -323,7 +323,7 @@ class AudioProcessor(object):
     def load_wav(self, filename, sr=None):
         if sr is None:
             x, sr = sf.read(filename)
-            assert self.sample_rate == sr, "%s vs %s"%(self.sample_rate, sr)
+            assert self.sample_rate == sr, "%s vs %s (%s)"%(self.sample_rate, sr, filename)
         else:
             x, sr = librosa.load(filename, sr=sr)
         if self.do_trim_silence:
