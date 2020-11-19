@@ -77,7 +77,10 @@ def text2phone_gruut(text, language):
         word_phonemes = [
             wp[0]
             for wp in gruut_lang.phonemizer.phonemize(
-                sentence.clean_words, word_indexes=True, word_breaks=True
+                    sentence.clean_words,
+                    word_indexes=True,
+                    word_breaks=True,
+                    separate_tones=None
             )
             if wp
         ]
