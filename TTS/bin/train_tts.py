@@ -416,7 +416,7 @@ def evaluate(model, criterion, ap, global_step, epoch, speaker_mapping=None):
             tb_logger.tb_eval_stats(global_step, keep_avg.avg_values)
             tb_logger.tb_eval_figures(global_step, eval_figures)
 
-    if args.rank == 0 and epoch > c.test_delay_epochs:
+    if args.rank == 0 and (epoch > c.test_delay_epochs) and ((epoch % getattr(c, "test_n_epochs", 1)) == 0):
         if c.test_sentences_file is None:
             test_sentences = [
                 "It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",
