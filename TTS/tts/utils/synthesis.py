@@ -15,7 +15,8 @@ def text_to_seqvec(text, CONFIG, text_is_phonemes=False):
                                 CONFIG.enable_eos_bos_chars,
                                 tp=CONFIG.characters if 'characters' in CONFIG.keys() else None,
                                 backend=CONFIG.get('phoneme_backend', 'phonemizer'),
-                                text_is_phonemes=text_is_phonemes),
+                                text_is_phonemes=text_is_phonemes,
+                                word_breaks=CONFIG.get('characters', {}).get('word_breaks', True)),
             dtype=np.int32)
     else:
         seq = np.asarray(text_to_sequence(text, text_cleaner, tp=CONFIG.characters if 'characters' in CONFIG.keys() else None), dtype=np.int32)
