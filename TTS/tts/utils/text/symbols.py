@@ -6,7 +6,7 @@ The default is a set of ASCII characters that works well for English or text tha
 through Unidecode. For other data, you can modify _characters. See TRAINING_DATA.md for details.
 '''
 def make_symbols(characters, phonemes, punctuations='!\'(),-.:;? ', pad='_', eos='~', bos='^',
-                 eos_bos_phonemes=True, sort_phonemes=True): # pylint: disable=redefined-outer-name
+                 eos_bos_phonemes=True, sort_phonemes=True, **kwargs): # pylint: disable=redefined-outer-name
     ''' Function to create symbols and phonemes '''
     _phonemes_sorted = list(phonemes)
 
