@@ -25,6 +25,7 @@ class MyDataset(Dataset):
                  phoneme_language="en-us",
                  phoneme_backend="phonemizer",
                  enable_eos_bos=False,
+                 word_breaks=True,
                  speaker_mapping=None,
                  verbose=False):
         """
@@ -63,6 +64,7 @@ class MyDataset(Dataset):
         self.phoneme_language = phoneme_language
         self.phoneme_backend = phoneme_backend
         self.enable_eos_bos = enable_eos_bos
+        self.word_breaks = word_breaks
         self.speaker_mapping = speaker_mapping
         self.verbose = verbose
         if use_phonemes and not os.path.isdir(phoneme_cache_path):
@@ -73,6 +75,7 @@ class MyDataset(Dataset):
             if use_phonemes:
                 print("   | > phoneme language: {}".format(phoneme_language))
                 print("   | > phoneme backend: {}".format(phoneme_backend))
+                print("   | > word breaks: {}".format(word_breaks))
             print(" | > Number of instances : {}".format(len(self.items)))
         self.sort_items()
 
@@ -94,7 +97,8 @@ class MyDataset(Dataset):
                                        language=self.phoneme_language,
                                        enable_eos_bos=False,
                                        tp=self.tp,
-                                       backend=self.phoneme_backend)
+                                       backend=self.phoneme_backend,
+                                       word_breaks=self.word_breaks)
         phonemes = np.asarray(phonemes, dtype=np.int32)
         np.save(cache_path, phonemes)
         return phonemes

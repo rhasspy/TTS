@@ -57,6 +57,7 @@ def setup_loader(ap, r, is_val=False, verbose=False):
             phoneme_language=c.phoneme_language,
             phoneme_backend=c.get("phoneme_backend", "phonemizer"),
             enable_eos_bos=c.enable_eos_bos_chars,
+            word_breaks=c.get("characters", {}).get("word_breaks", True),
             verbose=verbose)
         sampler = DistributedSampler(dataset) if num_gpus > 1 else None
         loader = DataLoader(
