@@ -18,7 +18,7 @@
         "ref_level_db": 20,     // reference level db, theoretically 20db is the sound of air.
 
         // Silence trimming
-        "do_trim_silence": true,// enable trimming of slience of audio as you load it. LJspeech (true), TWEB (false), Nancy (true)
+        "do_trim_silence": false,// enable trimming of slience of audio as you load it. LJspeech (true), TWEB (false), Nancy (true)
         "trim_db": 60,          // threshold for timming silence. Set this according to your dataset.
 
         // Griffin-Lim
@@ -55,7 +55,7 @@
     // DISTRIBUTED TRAINING
     "distributed":{
         "backend": "nccl",
-        "url": "tcp:\/\/localhost:54321"
+        "url": "tcp://localhost:54321"
     },
 
     "reinit_layers": [],    // give a list of layer names to restore from the given checkpoint. If not defined, it reloads all heuristically matching layers.
