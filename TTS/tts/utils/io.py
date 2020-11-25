@@ -6,6 +6,7 @@ import pickle as pickle_tts
 from TTS.utils.io import RenamingUnpickler
 
 
+
 def load_checkpoint(model, checkpoint_path, amp=None, use_cuda=False):
     try:
         state = torch.load(checkpoint_path, map_location=torch.device('cpu'))
@@ -20,13 +21,17 @@ def load_checkpoint(model, checkpoint_path, amp=None, use_cuda=False):
     # set model stepsize
     if hasattr(model.decoder, 'r'):
         model.decoder.set_r(state['r'])
+        print(" > Model r: ", state['r'])
     return model, state
 
 
 def save_model(model, optimizer, current_step, epoch, r, output_path, amp_state_dict=None, **kwargs):
-    new_state_dict = model.state_dict()
+    if hasattr(model, 'module'):
+        model_state = model.module.state_dict()
+    else:
+        model_state = model.state_dict()
     state = {
-        'model': new_state_dict,
+        'model': model_state,
         'optimizer': optimizer.state_dict() if optimizer is not None else None,
         'step': current_step,
         'epoch': epoch,

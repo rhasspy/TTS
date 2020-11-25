@@ -10,7 +10,7 @@ import time
 
 import torch
 
-from TTS.tts.utils.generic_utils import setup_model
+from TTS.tts.utils.generic_utils import setup_model, is_tacotron
 from TTS.tts.utils.synthesis import synthesis
 from TTS.tts.utils.text.symbols import make_symbols, phonemes, symbols
 from TTS.utils.audio import AudioProcessor
@@ -144,8 +144,7 @@ if __name__ == "__main__":
     model.eval()
     if args.use_cuda:
         model.cuda()
-
-    if hasattr(model.decoder, "set_r"):
+    if is_tacotron(C):
         model.decoder.set_r(cp['r'])
 
     # load vocoder model
@@ -173,8 +172,11 @@ if __name__ == "__main__":
     else:
         args.speaker_fileid = None
 
-    if (args.gst_style is None) and ("gst" in C.keys()):
-        gst_style = C.gst.get('gst_style_input', None)
+    if args.gst_style is None:
+        if is_tacotron(C):
+            gst_style = C.gst['gst_style_input']
+        else:
+            gst_style = None
     else:
         # check if gst_style string is a dict, if is dict convert  else use string
         try:

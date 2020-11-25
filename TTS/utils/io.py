@@ -1,5 +1,7 @@
+import os
 import re
 import json5
+import yaml
 import pickle as pickle_tts
 
 
@@ -17,16 +19,21 @@ class AttrDict(dict):
         self.__dict__ = self
 
 
-def load_config(config_path):
+def load_config(config_path: str) -> AttrDict:
     """Load config files and discard comments
 
     Args:
         config_path (str): path to config file.
     """
     config = AttrDict()
-
-    with open(config_path, "r") as config_file:
-        data = json5.load(config_file)
+    ext = os.path.splitext(config_path)[1]
+    if ext in (".yml", ".yaml"):
+        with open(config_path, "r") as f:
+            data = yaml.safe_load(f)
+    else:
+        # fallback to json
+        with open(config_path, "r") as config_file:
+            data = json5.load(config_file)
 
     config.update(data)
     return config

@@ -16,10 +16,13 @@ def text_to_seqvec(text, CONFIG, text_is_phonemes=False):
                                 tp=CONFIG.characters if 'characters' in CONFIG.keys() else None,
                                 backend=CONFIG.get('phoneme_backend', 'phonemizer'),
                                 text_is_phonemes=text_is_phonemes,
-                                word_breaks=CONFIG.get('characters', {}).get('word_breaks', True)),
+                                word_breaks=CONFIG.get('characters', {}).get('word_breaks', True),
+                                add_blank=CONFIG['add_blank'] if 'add_blank' in CONFIG.keys() else False),
             dtype=np.int32)
     else:
-        seq = np.asarray(text_to_sequence(text, text_cleaner, tp=CONFIG.characters if 'characters' in CONFIG.keys() else None), dtype=np.int32)
+        seq = np.asarray(
+            text_to_sequence(text, text_cleaner, tp=CONFIG.characters if 'characters' in CONFIG.keys() else None,
+            add_blank=CONFIG['add_blank'] if 'add_blank' in CONFIG.keys() else False), dtype=np.int32)
     return seq
 
 def numpy_to_torch(np_array, dtype, cuda=False):
@@ -60,7 +63,7 @@ def run_model_torch(model, inputs, CONFIG, truncated, speaker_id=None, style_mel
                     inputs, speaker_ids=speaker_id, speaker_embeddings=speaker_embeddings)
     elif 'glow' in CONFIG.model.lower():
         inputs_lengths = torch.tensor(inputs.shape[1:2]).to(inputs.device)  # pylint: disable=not-callable
-        postnet_output, _, _, _, alignments, _, _ = model.inference(inputs, inputs_lengths)
+        postnet_output, _, _, _, alignments, _, _ = model.inference(inputs, inputs_lengths, g=speaker_id if speaker_id else speaker_embeddings)
         postnet_output = postnet_output.permute(0, 2, 1)
         # these only belong to tacotron models.
         decoder_output = None
@@ -210,7 +213,7 @@ def synthesis(model,
     """
     # GST processing
     style_mel = None
-    if CONFIG.use_gst and style_wav is not None:
+    if 'use_gst' in CONFIG.keys() and CONFIG.use_gst and style_wav is not None:
         if isinstance(style_wav, dict):
             style_mel = style_wav
         else:
