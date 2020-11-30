@@ -18,7 +18,7 @@ class TorchSTFT():
                        self.n_fft,
                        self.hop_length,
                        self.win_length,
-                       self.window,
+                       self.window.to(x.device),
                        center=True,
                        pad_mode="reflect",  # compatible with audio.py
                        normalized=False,
