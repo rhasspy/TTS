@@ -61,18 +61,24 @@ def text2phone_phonemizer(text, language):
 
 _GRUUT_LANGUAGES = {}
 
-def text2phone_gruut(text, language, word_breaks=True):
-    '''
-    Convert graphemes to phonemes using gruut.
-    '''
+def load_gruut_language(language):
+    """Load a language for gruut"""
     import gruut
 
     gruut_lang = _GRUUT_LANGUAGES.get(language)
+
     if not gruut_lang:
         gruut_lang = gruut.Language.load(language)
         assert gruut_lang, f"Unsupported gruut language: {language}"
         _GRUUT_LANGUAGES[language] = gruut_lang
 
+    return gruut_lang
+
+def text2phone_gruut(text, language, word_breaks=True):
+    '''
+    Convert graphemes to phonemes using gruut.
+    '''
+    gruut_lang = load_gruut_language(language)
     text_phonemes = []
     for sentence in gruut_lang.tokenizer.tokenize(text):
         # Choose first pronunciation for each word
