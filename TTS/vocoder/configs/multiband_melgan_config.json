@@ -106,7 +106,7 @@
     "test_sentences_file": null,  // set a file to load sentences to be used for testing. If it is null then we use default english sentences.
 
     // OPTIMIZER
-    "epochs": 10000,                // total number of epochs to train.
+    "epochs": 100000,                // total number of epochs to train.
     "wd": 0.0,                // Weight decay weight.
     "gen_clip_grad": -1,      // Generator gradient clipping threshold. Apply gradient clipping if > 0
     "disc_clip_grad": -1,     // Discriminator gradient clipping threshold.
