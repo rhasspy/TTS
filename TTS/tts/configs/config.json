@@ -81,13 +81,13 @@
 
     // VALIDATION
     "run_eval": true,
-    "test_delay_epochs": 10,  //Until attention is aligned, testing only wastes computation time.
+    "test_delay_epochs": 100,  //Until attention is aligned, testing only wastes computation time.
     "test_sentences_file": null,  // set a file to load sentences to be used for testing. If it is null then we use default english sentences.
 
     // OPTIMIZER
     "noam_schedule": false,        // use noam warmup and lr schedule.
     "grad_clip": 1.0,              // upper limit for gradients for clipping.
-    "epochs": 10000,                // total number of epochs to train.
+    "epochs": 100000,              // total number of epochs to train.
     "lr": 0.0001,                  // Initial learning rate. If Noam decay is active, maximum learning rate.
     "wd": 0.000001,                // Weight decay weight.
     "warmup_steps": 4000,          // Noam decay steps to increase the learning rate from 0 to "lr"
