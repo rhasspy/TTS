@@ -78,6 +78,8 @@ def text2phone_gruut(text, language, word_breaks=True):
     '''
     Convert graphemes to phonemes using gruut.
     '''
+    from gruut_ipa import IPA
+
     gruut_lang = load_gruut_language(language)
     text_phonemes = []
     for sentence in gruut_lang.tokenizer.tokenize(text):
@@ -93,10 +95,18 @@ def text2phone_gruut(text, language, word_breaks=True):
             if wp
         ]
 
-        text_phonemes.extend(
-            p for ps in word_phonemes
-            for p in ps
-        )
+        # Convert to integer sequence.
+        # Drop unknown phonemes.
+        for pron in word_phonemes:
+            for phoneme in pron:
+                if phoneme:
+                    if IPA.is_stress(phoneme[0]):
+                        text_phonemes.append(phonemes[phoneme[0]])
+                        phoneme = IPA.without_stress(phoneme)
+
+                phoneme_idx = phonemes.get(phoneme)
+                if phoneme_idx is not None:
+                    text_phonemes.append(phoneme_idx)
 
     return text_phonemes
 
