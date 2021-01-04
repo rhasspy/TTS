@@ -101,12 +101,10 @@ def text2phone_gruut(text, language, word_breaks=True):
             for phoneme in pron:
                 if phoneme:
                     if IPA.is_stress(phoneme[0]):
-                        text_phonemes.append(phonemes[phoneme[0]])
+                        text_phonemes.append(phoneme[0])
                         phoneme = IPA.without_stress(phoneme)
 
-                phoneme_idx = phonemes.get(phoneme)
-                if phoneme_idx is not None:
-                    text_phonemes.append(phoneme_idx)
+                text_phonemes.append(phoneme)
 
     return text_phonemes
 
