@@ -545,7 +545,7 @@ def main(args):  # pylint: disable=redefined-outer-name
             # optimizer restore
             print(" > Restoring Optimizer.")
             optimizer.load_state_dict(checkpoint['optimizer'])
-            if "scaler" in checkpoint and c.mixed_precision:
+            if checkpoint.get("scaler") and c.mixed_precision:
                 print(" > Restoring AMP Scaler...")
                 scaler.load_state_dict(checkpoint["scaler"])
             if c.reinit_layers:
