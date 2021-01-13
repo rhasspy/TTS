@@ -603,6 +603,8 @@ def main(args):  # pylint: disable=redefined-outer-name
             r, c.batch_size = gradual_training_scheduler(global_step, c)
             c.r = r
             model.decoder.set_r(r)
+            train_loader.dataset.outputs_per_step = r
+            eval_loader.dataset.outputs_per_step = r
             if c.bidirectional_decoder:
                 model.decoder_backward.set_r(r)
             print("\n > Number of output frames:", model.decoder.r)

@@ -85,6 +85,7 @@
         "seq_len_norm": false,         // Normalize eash sample loss with its length to alleviate imbalanced datasets. Use it if your dataset is small or has skewed distribution of sequence lengths.
 
         "encoder_type": "time-depth-separable",
+        "data_dep_init_iter": 1,
 
         // TENSORBOARD and LOGGING
         "print_step": 25,       // Number of steps to log training on console.
